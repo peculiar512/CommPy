@@ -7,8 +7,8 @@ from setuptools import setup
 DISTNAME = 'scikit-commpy'
 DESCRIPTION = 'Digital Communication Algorithms with Python'
 LONG_DESCRIPTION = open('README.md', encoding="utf8").read()
-MAINTAINER = 'Veeresh Taranalli & Bastien Trotobas'
-MAINTAINER_EMAIL = 'bastien.trotobas@gmail.com'
+MAINTAINER = 'Veeresh Taranalli & Bastien Trotobas,peculiar512'
+MAINTAINER_EMAIL = 'bastien.trotobas@gmail.com,3393151670@qq.com'
 URL = 'http://veeresht.github.com/CommPy'
 LICENSE = 'BSD 3-Clause'
 VERSION = '0.8.0'
@@ -22,7 +22,7 @@ setup(
     name=DISTNAME,
     maintainer=MAINTAINER,
     maintainer_email=MAINTAINER_EMAIL,
-    description=DESCRIPTION,
+    description=DESCRIPTION
     license=LICENSE,
     url=URL,
     version=VERSION,
@@ -32,10 +32,10 @@ setup(
     #recursively.)
     packages=['commpy', 'commpy.channelcoding', 'commpy.channelcoding.tests', 'commpy.tests'],
     install_requires=[
-          'numpy',
-          'scipy',
-          'matplotlib',
-          'sympy'
+          'numpy>=1.20',
+          'scipy>=1.5',
+          'matplotlib>=3.3',#新增可视化依赖
+          'sympy>=1.7'
     ],
     #'package' package must contain files (see list above)
     #This dict maps the package name =to=> directories
