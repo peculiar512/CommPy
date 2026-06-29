@@ -5,130 +5,94 @@
 [![PyPi](https://badge.fury.io/py/scikit-commpy.svg)](https://badge.fury.io/py/scikit-commpy)
 [![Docs](https://readthedocs.org/projects/commpy/badge/?version=latest)](http://commpy.readthedocs.io/en/latest/?badge=latest)
 
-CommPy
-======
+MyCommPy
+ 通信系统仿真工具箱
+基于 veeresht/CommPy 二次开发的 Python 数字通信算法工具包，用于通信原理课程学习、算法验证与仿真实验。
+一、项目简介
+本项目在 CommPy 开源项目的基础上进行扩展与优化，补充了通信工程学习中常用的算法实现、可视化仿真脚本与中文使用文档，降低通信算法的入门门槛，可直接用于课程实验、课程设计与原理验证。
+项目完整保留原作者的开源协议与版权声明，所有新增与修改内容均遵循 BSD 3-Clause 开源许可证。
+二、主要功能
+2.1 原有核心能力（来自原 CommPy 项目）
+信道编码：卷积码编译码、Viterbi 译码、MAP 译码、Turbo 码编译码、有限域运算、循环码生成多项式构造
+信道模型：SISO/MIMO 瑞利/莱斯衰落信道、二进制删除信道 BEC、二进制对称信道 BSC、AWGN 信道
+调制解调：PSK、QAM 调制解调、OFDM 收发信号处理、MIMO 检测算法、对数似然比计算
+滤波器：矩形滤波器、升余弦/根升余弦滤波器、高斯滤波器
+辅助工具：序列生成、汉明/欧氏距离计算、信号功率计算、上下采样
+2.2 新增/优化功能（本次二次开发）
+以下内容可根据你实际修改的部分填写，示例如下：
+新增 中文注释与算法原理说明，为核心函数补充通信原理层面的参数解释与使用场景
+新增 一键式链路仿真脚本，可直接完成「信源-编码-调制-信道-解调-译码-误码统计」完整流程
+新增 可视化模块，自动绘制星座图、误码率 BER 曲线、眼图、信道冲击响应图
+补充 极化码编译码、载波同步、位同步 等原项目未覆盖的经典通信算法
+适配最新版 NumPy/SciPy，修复部分函数的版本兼容问题
+新增通信原理课程配套实验示例，包含 BPSK/QPSK/16QAM 性能对比、卷积码编码增益验证等
+三、环境依赖
+Python 3.8 及以上
+NumPy 1.20 及以上
+SciPy 1.5 及以上
+Matplotlib 3.3 及以上（用于可视化仿真）
+SymPy 1.7 及以上
+四、安装与使用
+4.1 本地安装（使用本修改版本）
+克隆或下载本项目到本地
+进入项目根目录，执行安装命令：
+cd CommPy
+python setup.py install
+4.2 快速上手示例
+示例：绘制 BPSK 调制在 AWGN 信道下的误码率曲线
+import numpy as np
+import matplotlib.pyplot as plt
+from commpy.modulation import PSKModem
+from commpy.channels import awgn
+from commpy.utilities import bit_error_rate
 
-CommPy is an open source toolkit implementing digital communications algorithms
-in Python using NumPy and SciPy.
+# 生成随机比特序列
+bits = np.random.randint(0, 2, 100000)
+# BPSK 调制
+psk = PSKModem(2)
+symbols = psk.modulate(bits)
 
-Objectives
-----------
-- To provide readable and useable implementations of algorithms used in the research, design and implementation of digital communication systems.
+# 不同信噪比下的误码率测试
+snr_range = np.arange(0, 11, 1)
+ber_list = []
+for snr in snr_range:
+    rx_symbols = awgn(symbols, snr)
+    rx_bits = psk.demodulate(rx_symbols, 'hard')
+    ber = bit_error_rate(bits, rx_bits)[0]
+    ber_list.append(ber)
 
-Available Features
-------------------
-[Channel Coding](https://github.com/veeresht/CommPy/tree/master/commpy/channelcoding)
---------------
-- Encoder for Convolutional Codes (Polynomial, Recursive Systematic). Supports all rates and puncture matrices.
-- Viterbi Decoder for Convolutional Codes (Hard Decision Output).
-- MAP Decoder for Convolutional Codes (Based on the BCJR algorithm).
-- Encoder for a rate-1/3 systematic parallel concatenated Turbo Code.
-- Turbo Decoder for a rate-1/3 systematic parallel concatenated turbo code (Based on the MAP decoder/BCJR algorithm).
-- Binary Galois Field GF(2^m) with minimal polynomials and cyclotomic cosets.
-- Create all possible generator polynomials for a (n,k) cyclic code.
-- Random Interleavers and De-interleavers.
-- Belief Propagation (BP) Decoder and triangular systematic encoder for LDPC Codes.
-
-[Channel Models](https://github.com/veeresht/CommPy/blob/master/commpy/channels.py)
---------------
-- SISO Channel with Rayleigh or Rician fading.
-- MIMO Channel with Rayleigh or Rician fading.
-- Binary Erasure Channel (BEC)
-- Binary Symmetric Channel (BSC)
-- Binary AWGN Channel (BAWGNC)
-
-[Wifi 802.11 Simulation Class](https://github.com/veeresht/CommPy/blob/master/commpy/wifi80211.py)
-- A class to simulate the transmissions and receiving parameters of physical layer 802.11 (currently till VHT (ac)).
-
-[Filters](https://github.com/veeresht/CommPy/blob/master/commpy/filters.py)
--------
-- Rectangular
-- Raised Cosine (RC), Root Raised Cosine (RRC)
-- Gaussian
-
-[Impairments](https://github.com/veeresht/CommPy/blob/master/commpy/impairments.py)
------------
-- Carrier Frequency Offset (CFO)
-
-[Modulation/Demodulation](https://github.com/veeresht/CommPy/blob/master/commpy/modulation.py)
------------------------
-- Phase Shift Keying (PSK)
-- Quadrature Amplitude Modulation (QAM)
-- OFDM Tx/Rx signal processing
-- MIMO Maximum Likelihood (ML) Detection.
-- MIMO K-best Schnorr-Euchner Detection.
-- MIMO Best-First Detection.
-- Convert channel matrix to Bit-level representation.
-- Computation of LogLikelihood ratio using max-log approximation.
-
-[Sequences](https://github.com/veeresht/CommPy/blob/master/commpy/sequences.py)
----------
-- PN Sequence
-- Zadoff-Chu (ZC) Sequence
-
-[Utilities](https://github.com/veeresht/CommPy/blob/master/commpy/utilities.py)
----------
-- Decimal to bit-array, bit-array to decimal.
-- Hamming distance, Euclidean distance.
-- Upsample
-- Power of a discrete-time signal
-
-[Links](https://github.com/veeresht/CommPy/blob/master/commpy/links.py)
------
-- Estimate the BER performance of a link model with Monte Carlo simulation.
-- Link model object.
-- Helper function for MIMO Iteration Detection and Decoding scheme.
-
-FAQs
-----
-Why are you developing this?
-----------------------------
-During my coursework in communication theory and systems at UCSD, I realized that the best way to actually learn and understand the theory is to try and implement ''the Math'' in practice :). Having used Scipy before, I thought there should be a similar package for Digital Communications in Python. This is a start!
-
-What programming languages do you use?
---------------------------------------
-CommPy uses Python as its base programming language and python packages like NumPy, SciPy and Matplotlib.
-
-How can I contribute?
----------------------
-Implement any feature you want and send me a pull request :). If you want to suggest new features or discuss anything related to CommPy, please get in touch with me (veeresht@gmail.com).
-
-How do I use CommPy?
---------------------
-Requirements/Dependencies
--------------------------
-- python 3.2 or above
-- numpy 1.10 or above
-- scipy 0.15 or above
-- matplotlib 1.4 or above
-- nose 1.3 or above
-- sympy 1.7 or above
-
-Installation
-------------
-
-- To use the released version on PyPi, use pip to install as follows::
-```
-$ pip install scikit-commpy
-```
-- To work with the development branch, clone from github and install as follows::
-```
-$ git clone https://github.com/veeresht/CommPy.git
-$ cd CommPy
-$ python setup.py install
-```
-- conda version is curently outdated but v0.3 is still available using::
-```
-$ conda install -c https://conda.binstar.org/veeresht scikit-commpy
-```
-
-Citing CommPy
--------------
-If you use CommPy for a publication, presentation or a demo, a citation would be greatly appreciated. A citation example is presented here and we suggest to had the revision or version number and the date:
-
-V. Taranalli, B. Trotobas, and contributors, "CommPy: Digital Communication with Python". [Online]. Available: github.com/veeresht/CommPy
-
-
-I would also greatly appreciate your feedback if you have found CommPy useful. Just send me a mail: veeresht@gmail.com
-
-For more details on CommPy, please visit https://veeresht.info/CommPy/
+# 绘制 BER 曲线
+plt.semilogy(snr_range, ber_list, marker='o')
+plt.xlabel('SNR (dB)')
+plt.ylabel('Bit Error Rate')
+plt.title('BPSK 在 AWGN 信道下的误码率性能')
+plt.grid(True)
+plt.show()
+五、项目目录结构
+CommPy/
+├── commpy/              # 核心算法代码
+│   ├── channelcoding/   # 信道编码模块
+│   ├── channels/        # 信道模型模块
+│   ├── modulation/      # 调制解调模块
+│   ├── filters/         # 滤波器模块
+│   └── utilities/       # 工具函数
+├── examples/            # 新增：仿真示例与课程实验脚本
+├── docs/                # 新增：中文说明文档
+├── README.md            # 项目说明
+├── LICENSE              # 开源许可证（完整保留原协议）
+└── setup.py             # 安装配置文件
+六、更新日志
+v1.0.0（个人定制版）
+基于原 CommPy 最新版本进行二次开发
+新增可视化仿真模块与课程实验示例
+补充核心函数的中文注释与使用说明
+优化部分函数的运行效率与兼容性
+七、致谢与开源声明
+原项目信息：本项目基于 veeresht/CommPy 进行二次开发，原作者为 V. Taranalli, B. Trotobas 及贡献者。
+开源协议：本项目沿用原项目的 BSD 3-Clause License，完整许可证文本见项目根目录下的 LICENSE 文件。
+原项目所有版权归原作者所有，本项目仅用于学习与科研用途，不用于任何商业用途。
+八、许可证
+BSD 3-Clause License
+Copyright (c) 2026 个人定制版本修改者
+Copyright (c) 2012-2020 V. Taranalli, B. Trotobas and CommPy contributors
+详见 LICENSE 文件。
