@@ -27,11 +27,12 @@ MyCommPy
 适配最新版 NumPy/SciPy，修复部分函数的版本兼容问题
 新增通信原理课程配套实验示例，包含 BPSK/QPSK/16QAM 性能对比、卷积码编码增益验证等
 三、环境依赖
-Python 3.8 及以上
+Python 3.8 ~3.12
 NumPy 1.20 及以上
 SciPy 1.5 及以上
 Matplotlib 3.3 及以上（用于可视化仿真）
 SymPy 1.7 及以上
+新增matplotlib可视化依赖
 四、安装与使用
 4.1 本地安装（使用本修改版本）
 克隆或下载本项目到本地
